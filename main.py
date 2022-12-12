@@ -158,8 +158,6 @@ class Ui_Form(object):
         self.file2_view.checkStateChanged.connect(self.deleteLog)
 
 
-
-
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -173,11 +171,6 @@ class Ui_Form(object):
             if os.path.isdir(path+"/"+j):
                 self.updatelogg(path+"/"+j)
             folder1_list.append(path + "/" + j)
-
-
-
-
-
 
 
     def retranslateUi(self, Form):
@@ -250,12 +243,6 @@ class Ui_Form(object):
                             pass
 
 
-
-
-
-
-
-
     def copy(self):
         global folder1_path
         global folder2_path
@@ -266,15 +253,12 @@ class Ui_Form(object):
                 s = os.path.join(folder1_path, item)
                 d = os.path.join(folder2_path, item)
                 for temp in folder1_list:
-                    print(folder1_list)
                     if str(temp).replace("\\","/") == s.replace("\\","/"):
                         select = True
                 if os.path.isdir(s):
-                    print("b")
                     self.treecopy(s, d)
 
                 if select == True:
-                        print("a")
                         try:
                             shutil.copy2(s, d)
                         except OSError as error:
@@ -309,7 +293,6 @@ class Ui_Form(object):
 
 
     def selected_delete(self):
-
         if folder2_path != "":
             for item in os.listdir(folder2_path):
                 for temp in folder2_list:
@@ -322,7 +305,6 @@ class Ui_Form(object):
                             os.unlink(temp)
                         else:
                             os.remove(temp)
-
 
     def copy_mode(self):
         global folder2_path
@@ -344,13 +326,10 @@ class Ui_Form(object):
             self.copy()
 
         else:
-
-
             self.file2_view.setRootPath(folder1_path)
             self.tree2.setModel(self.file2_view)
             self.tree2.setRootIndex(self.file2_view.index(folder1_path))
             self.tree2.hide()
-
 
             self.selected_delete()
             self.file3_view.setRootPath(folder2_path)
@@ -358,7 +337,6 @@ class Ui_Form(object):
             self.tree3.setRootIndex(self.file3_view.index(folder2_path))
             self.tree3.show()
             self.copy()
-
 
     def file2clear(self):
         global folder2_path
@@ -378,10 +356,6 @@ class Ui_Form(object):
             msgBox.exec_()
 
 
-
-
-
-
     def file1(self):
         global folder1_path
         dialog = QtWidgets.QFileDialog()
@@ -393,11 +367,7 @@ class Ui_Form(object):
         self.tree1.setModel(self.file1_view)
         self.tree1.setRootIndex(self.file1_view.index(folder1_path))
 
-    def file22(self):
-        global folder2_path
-        self.file2_view.setRootPath(folder2_path)
-        self.tree2.setModel(self.file2_view)
-        self.tree2.setRootIndex(self.file2_view.index(folder2_path))
+
 
     def file2(self):
         global folder2_path
@@ -405,7 +375,9 @@ class Ui_Form(object):
         folder2_path = dialog.getExistingDirectory(None, "Select Folder")
         self.file2_text.setText(folder2_path)
         self.file2_text.setFont(QFont('Bold', 12))
-        self.file22()
+        self.file2_view.setRootPath(folder2_path)
+        self.tree2.setModel(self.file2_view)
+        self.tree2.setRootIndex(self.file2_view.index(folder2_path))
 
 if __name__ == '__main__':
     import sys
