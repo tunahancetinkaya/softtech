@@ -292,19 +292,24 @@ class Ui_Form(object):
             msgBox.exec_()
 
 
-    def selected_delete(self):
-        if folder2_path != "":
-            for item in os.listdir(folder2_path):
+    def selected_delete(self,folder2_pathh):
+        if folder2_pathh != "":
+            for item in os.listdir(folder2_pathh):
+                d = os.path.join(folder2_pathh, item)
                 for temp in folder2_list:
                     select = False
-                    if str(temp) == folder2_path+"/"+item:
+                    if str(temp).replace("\\","/") == d.replace("\\","/"):
                         select = True
+
                     if select:
-                        if os.path.isdir(temp):
-                            shutil.rmtree(temp)
-                            os.unlink(temp)
-                        else:
-                            os.remove(temp)
+                        if os.path.exists(temp):
+                            if os.path.isdir(temp):
+                                shutil.rmtree(temp)
+                            else:
+                                os.remove(temp)
+                    if os.path.exists(d) and os.path.isdir(d):
+                        self.selected_delete(d)
+
 
     def copy_mode(self):
         global folder2_path
@@ -331,7 +336,7 @@ class Ui_Form(object):
             self.tree2.setRootIndex(self.file2_view.index(folder1_path))
             self.tree2.hide()
 
-            self.selected_delete()
+            self.selected_delete(folder2_path)
             self.file3_view.setRootPath(folder2_path)
             self.tree3.setModel(self.file3_view)
             self.tree3.setRootIndex(self.file3_view.index(folder2_path))
