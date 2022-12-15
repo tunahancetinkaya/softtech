@@ -172,6 +172,12 @@ class Ui_Form(object):
                 self.updatelogg(path+"/"+j)
             folder1_list.append(path + "/" + j)
 
+    def deletelogg(self,path):
+        for j in os.listdir(path):
+            if os.path.isdir(path+"/"+j):
+                self.deletelogg(path+"/"+j)
+            folder1_list.remove(path + "/" + j)
+
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -203,9 +209,22 @@ class Ui_Form(object):
             else:
                 folder1_list.append(path)
         else:
-            for i in folder1_list:
-                if i == path:
-                    folder1_list.remove(path)
+            # for i in folder1_list:
+            #     if i == path:
+            #         folder1_list.remove(path)
+            sayacc = 0
+            if os.path.isdir(path):
+
+                for j in os.listdir(path):
+                    if os.path.isdir(path + "/" + j):
+                        self.deletelogg(path + "/" + j)
+                    folder1_list.remove(path + "/" + j)
+                for i in folder1_list:
+                    if i != path and sayacc == 0:
+                        sayacc += 1
+                        folder1_list.remove(path)
+            else:
+                folder1_list.remove(path)
 
     def deleteLog(self, path, checked):
         if checked:
@@ -294,19 +313,20 @@ class Ui_Form(object):
 
     def selected_delete(self,folder2_pathh):
         if folder2_pathh != "":
-            for item in os.listdir(folder2_pathh):
-                d = os.path.join(folder2_pathh, item)
-                for temp in folder2_list:
-                    select = False
-                    if str(temp).replace("\\","/") == d.replace("\\","/"):
-                        select = True
+            if os.listdir(folder2_pathh) !=0:
+                for item in os.listdir(folder2_pathh):
+                    d = os.path.join(folder2_pathh, item)
+                    for temp in folder2_list:
+                        select = False
+                        if str(temp).replace("\\","/") == d.replace("\\","/"):
+                            select = True
 
-                    if select:
-                        if os.path.exists(temp):
-                            if os.path.isdir(temp):
-                                shutil.rmtree(temp)
-                            else:
-                                os.remove(temp)
+                        if select:
+                            if os.path.exists(temp):
+                                if os.path.isdir(temp):
+                                    shutil.rmtree(temp)
+                                else:
+                                    os.remove(temp)
                     if os.path.exists(d) and os.path.isdir(d):
                         self.selected_delete(d)
 
