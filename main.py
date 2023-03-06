@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtWidgets
 import os
 import shutil
 import errno
+import git
 
 
 global folder1_path
@@ -126,6 +127,13 @@ class Ui_Form(object):
         self.copybutton = QtWidgets.QPushButton(Form)
         self.copybutton.setGeometry(QtCore.QRect(522, 520, 300, 50))
 
+        self.gitpull_button = QtWidgets.QPushButton(Form)
+        self.gitpull_button.setGeometry(QtCore.QRect(854, 90, 150, 50))
+
+        self.gitpush_button = QtWidgets.QPushButton(Form)
+        self.gitpush_button.setGeometry(QtCore.QRect(854, 520, 150, 50))
+
+
         self.combo = QtWidgets.QComboBox(Form)
         self.combo.addItem("Hedef Klasörü Tut")
         self.combo.addItem("Hedef Klasörü Temizle")
@@ -163,6 +171,8 @@ class Ui_Form(object):
 
         self.file1_button.clicked.connect(self.file1)
         self.file2_button.clicked.connect(self.file2)
+        self.gitpull_button.clicked.connect(self.gitpull)
+        self.gitpush_button.clicked.connect(self.gitpush)
 
         self.copybutton.clicked.connect(self.copy_mode)
 
@@ -184,10 +194,14 @@ class Ui_Form(object):
         Form.setWindowTitle(_translate("Form", "Softtech"))
         self.file1_button.setText(_translate("Form", "Kaynak"))
         self.file2_button.setText(_translate("Form", "Hedef"))
+        self.gitpull_button.setText(_translate("Form", "Git Pull"))
+        self.gitpush_button.setText(_translate("Form", "Git Push"))
 
         self.copybutton.setText(_translate("Form", "Kopyala"))
         self.file1_button.setFont(QFont('Bold', 12))
         self.file2_button.setFont(QFont('Bold', 12))
+        self.gitpull_button.setFont(QFont('Bold', 12))
+        self.gitpush_button.setFont(QFont('Bold', 12))
 
         self.copybutton.setFont(QFont('Bold', 14))
 
@@ -308,6 +322,44 @@ class Ui_Form(object):
             msgBox.setIcon(QMessageBox.Warning)
             msgBox.setWindowTitle("Softtech")
             msgBox.setText("Hedef klasör belirtilmedi")
+            msgBox.exec_()
+
+    def gitpull(self):
+        if folder2_path != "":
+            try:
+                repo = git.Repo(folder2_path)
+                o = repo.remote(name='origin')
+                o.pull()
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("Softtech")
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("Başarılı")
+                msgBox.exec_()
+            except:
+                msgBox = QMessageBox()
+                msgBox.setWindowTitle("Softtech")
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("Hata")
+                msgBox.exec_()
+        else:
+            msgBox = QMessageBox()
+            msgBox.setWindowTitle("Softtech")
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText("Klasör Seçiniz")
+            msgBox.exec_()
+
+    def gitpush(self):
+        try:
+            repo = git.Repo(folder2_path + "/.git")
+            repo.git.add(update=True)
+            repo.index.commit('Softtech')
+            origin = repo.remote(name='origin')
+            origin.push()
+        except:
+            msgBox = QMessageBox()
+            msgBox.setWindowTitle("Softtech")
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText("Hata")
             msgBox.exec_()
 
 
