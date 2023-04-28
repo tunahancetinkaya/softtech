@@ -19,6 +19,8 @@ folder2_list = []
 
 
 
+
+
 class CheckableFileSystemModel(QtWidgets.QFileSystemModel):
     checkStateChanged = QtCore.pyqtSignal(str, bool)
     def __init__(self):
@@ -107,11 +109,16 @@ class CheckableFileSystemModel(QtWidgets.QFileSystemModel):
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(1024, 590)
+        Form.resize(1024, 640)
 
         self.file1_button = QtWidgets.QPushButton(Form)
         self.file1_button.setGeometry(QtCore.QRect(20, 20, 150, 50))
 
+        self.file1_label = QtWidgets.QLabel(Form)
+        self.file1_label.setGeometry(QtCore.QRect(20, 485, 150, 50))
+
+        self.file2_label = QtWidgets.QLabel(Form)
+        self.file2_label.setGeometry(QtCore.QRect(522, 485, 150, 50))
 
         self.file1_text = QtWidgets.QLabel(Form)
         self.file1_text.setGeometry(QtCore.QRect(190, 20, 814, 50))
@@ -131,7 +138,13 @@ class Ui_Form(object):
         self.gitpull_button.setGeometry(QtCore.QRect(854, 90, 150, 50))
 
         self.gitpush_button = QtWidgets.QPushButton(Form)
-        self.gitpush_button.setGeometry(QtCore.QRect(854, 520, 150, 50))
+        self.gitpush_button.setGeometry(QtCore.QRect(854, 580, 150, 50))
+
+        self.gitpush_commit = QtWidgets.QLineEdit(Form)
+        self.gitpush_commit.setGeometry(QtCore.QRect(522, 580, 300, 50))
+
+        self.gitpush_committext = QtWidgets.QLabel(Form)
+        self.gitpush_committext.setGeometry(QtCore.QRect(420, 580, 100, 50))
 
 
         self.combo = QtWidgets.QComboBox(Form)
@@ -198,16 +211,21 @@ class Ui_Form(object):
         self.gitpush_button.setText(_translate("Form", "Git Push"))
 
         self.copybutton.setText(_translate("Form", "Kopyala"))
+        self.gitpush_committext.setText(_translate("Form", "Commit"))
+        self.gitpush_committext.setFont(QFont('Bold', 12))
+        self.gitpush_commit.setFont(QFont('Bold', 12))
         self.file1_button.setFont(QFont('Bold', 12))
         self.file2_button.setFont(QFont('Bold', 12))
         self.gitpull_button.setFont(QFont('Bold', 12))
         self.gitpush_button.setFont(QFont('Bold', 12))
-
+        self.file1_label.setFont(QFont('Bold', 12))
+        self.file2_label.setFont(QFont('Bold', 12))
         self.copybutton.setFont(QFont('Bold', 14))
 
         self.combo.setFont(QFont('Bold', 14))
 
     def updateLog(self, path, checked):
+
         if checked:
             sayac = 0
             if os.path.isdir(path):
@@ -239,15 +257,21 @@ class Ui_Form(object):
                         folder1_list.remove(path)
             else:
                 folder1_list.remove(path)
+        self.file1_label.setText(str(len(folder1_list)))
+        self.file2_label.setText(str(len(folder2_list)))
 
     def deleteLog(self, path, checked):
+        global file1_counter
         if checked:
             folder2_list.append(path)
+
 
         else:
             for i in folder2_list:
                 if i == path:
                     folder2_list.remove(path)
+        self.file1_label.setText(str(len(folder1_list)))
+        self.file2_label.setText(str(len(folder2_list)))
 
 
 
@@ -349,12 +373,21 @@ class Ui_Form(object):
             msgBox.exec_()
 
     def gitpush(self):
+        if self.gitpush_commit.text()=="":
+            gitcommittext = "Softtech"
+        else:
+            gitcommittext = self.gitpush_commit.text()
         try:
             repo = git.Repo(folder2_path + "/.git")
             repo.git.add(update=True)
-            repo.index.commit('Softtech')
+            repo.index.commit(gitcommittext)
             origin = repo.remote(name='origin')
             origin.push()
+            msgBox = QMessageBox()
+            msgBox.setWindowTitle("Softtech")
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText("Başarılı")
+            msgBox.exec_()
         except:
             msgBox = QMessageBox()
             msgBox.setWindowTitle("Softtech")
