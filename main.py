@@ -150,7 +150,7 @@ class Ui_Form(object):
         self.combo = QtWidgets.QComboBox(Form)
         self.combo.addItem("Hedef Klasörü Tut")
         self.combo.addItem("Hedef Klasörü Temizle")
-        self.combo.addItem("Seçilenleri Temizle")
+        self.combo.addItem("Seçilenleri Tut")
         self.combo.setGeometry(QtCore.QRect(202, 520, 300, 50))
 
         #self.file1_view = QtWidgets.QFileSystemModel(Form)
@@ -300,6 +300,25 @@ class Ui_Form(object):
                             pass
 
 
+    def treecopy2(self,s,d):
+        for items in os.listdir(s):
+            ss = os.path.join(s, items)
+            dd = os.path.join(d, items)
+            selectt = False
+            for tempp in folder2_list:
+                folder_controle = s + "/" + items
+                if str(tempp).replace("\\","/") == folder_controle.replace("\\","/"):
+                    selectt = True
+            if os.path.isdir(ss):
+                self.treecopy2(ss, dd)
+            if selectt == True:
+                        try:
+                            os.makedirs(os.path.dirname(dd), exist_ok=True)
+                            shutil.copy2(ss, dd)
+                        except OSError as error:
+                            pass
+
+
     def copy(self):
         global folder1_path
         global folder2_path
@@ -398,6 +417,7 @@ class Ui_Form(object):
 
     def selected_delete(self,folder2_pathh):
         if folder2_pathh != "":
+
             if os.listdir(folder2_pathh) !=0:
                 for item in os.listdir(folder2_pathh):
                     d = os.path.join(folder2_pathh, item)
@@ -414,6 +434,59 @@ class Ui_Form(object):
                                     os.remove(temp)
                     if os.path.exists(d) and os.path.isdir(d):
                         self.selected_delete(d)
+
+    def selected_copy(self,folder2_pathh):
+        tempp_len = folder2_pathh.rfind("/")
+        temp_len = len(folder2_pathh) - tempp_len
+        folder2_pathhh = folder2_pathh[:-temp_len+1] + "/softtechdosyakopyalamtemp"
+        os.mkdir(folder2_pathhh)
+        for item in os.listdir(folder2_pathh):
+            select = False
+            s = os.path.join(folder2_pathh, item)
+            d = os.path.join(folder2_pathhh, item)
+            for temp in folder2_list:
+                if str(temp).replace("\\", "/") == s.replace("\\", "/"):
+                    select = True
+            if os.path.isdir(s):
+                self.treecopy(s, d)
+
+            if select == True:
+                try:
+                    shutil.copy2(s, d)
+                except OSError as error:
+                    pass
+            else:
+                pass
+        shutil.rmtree(folder2_path)
+        os.mkdir(folder2_path)
+        self.copy3(folder2_pathhh,folder2_pathh)
+        shutil.rmtree(folder2_pathhh)
+
+    def copy3(self,f1,f2):
+
+
+        if f1 != "" and f2 != "":
+            for item in os.listdir(f1):
+                select = False
+                s = os.path.join(f1, item)
+                d = os.path.join(f2, item)
+                for temp in folder1_list:
+                    if str(temp).replace("\\","/") == s.replace("\\","/"):
+                        select = True
+                if os.path.isdir(s):
+                    self.treecopy(s, d)
+
+                if True:
+                        try:
+                            shutil.copy2(s, d)
+                        except OSError as error:
+                            pass
+                else:
+                    pass
+
+
+
+
 
 
     def copy_mode(self):
@@ -441,7 +514,7 @@ class Ui_Form(object):
             self.tree2.setRootIndex(self.file2_view.index(folder1_path))
             self.tree2.hide()
 
-            self.selected_delete(folder2_path)
+            self.selected_copy(folder2_path)
             self.file3_view.setRootPath(folder2_path)
             self.tree3.setModel(self.file3_view)
             self.tree3.setRootIndex(self.file3_view.index(folder2_path))
